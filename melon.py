@@ -49,14 +49,16 @@ def _tfvars(args):
     res = mailgun.get(url)
     res.raise_for_status()
     domain = res.json()
-    print(json.dumps(domain, sort_keys=True, indent=2))
     tfvars = {
-        'domain': domain['domain']['name'],
-        'mailgun_domain_smtp_password': domain['domain']['smtp_password'],
-        'mailgun_domain_spam_action': domain['domain']['spam_action'],
-        'mailgun_domain_wildcard': domain['domain']['wildcard'],
+        'variable': {
+            'domain': domain['domain']['name'],
+            'mailgun_api_key': args.mailgun_api_key,
+            'mailgun_domain_smtp_password': domain['domain']['smtp_password'],
+            'mailgun_domain_spam_action': domain['domain']['spam_action'],
+            'mailgun_domain_wildcard': domain['domain']['wildcard'],
+        }
     }
-    print(json.dumps(tfvars, sort_keys=True, indent=2))
+    print(json.dumps(tfvars, sort_keys=True, indent=4))
 
 
 

@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "tf_remote_config_bucket" {
   count  = "${var.tf_remote_backend}"
-  bucket = "${var.tf_remote_backend_bucket_prefix}-${var.domain}"
+  bucket = "${var.tf_remote_backend_bucket_prefix}-${replace(var.domain, ".", "-dot-") }"
 
   versioning {
     enabled = true

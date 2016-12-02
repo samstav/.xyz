@@ -2,6 +2,10 @@ provider "aws" {
   region = "${var.aws_region}"
 }
 
+provider "mailgun" {
+  api_key = "${var.mailgun_api_key}"
+}
+
 resource "aws_s3_bucket" "tf_remote_config_bucket" {
   lifecycle {
     prevent_destroy = true
@@ -39,10 +43,6 @@ output "tf_config_s3_bucket_region" {
   value = "${aws_s3_bucket.tf_remote_config_bucket.region}"
 }
 
-provider "mailgun" {
-  api_key = "${var.mailgun_api_key}"
-}
-
 resource "mailgun_domain" "this" {
   name          = "${var.domain}"
   smtp_password = "${var.mailgun_smtp_password}"
@@ -60,36 +60,51 @@ resource "aws_route53_zone" "this" {
   force_destroy = true
 }
 
-resource "aws_route53_record" "mailgun_sending_records" {
+output {
+  value = "${aws_route53_zone.this.zone_id}"
+}
 
-  # This is not allowed (yet), see terraform#1497, hard-coding for now.
-  #  count   = "${length(mailgun_domain.this.sending_records)}"
-  count = 3
+output {
+  # Be sure to check this output and set using the UpdateDomainNameservers API
+  value = "${aws_route53_zone.this.name_servers}"
+}
 
+resource "aws_route53_record" "mailgun_sending_record_0" {
   zone_id = "${aws_route53_zone.this.zone_id}"
-  name    = "${element(mailgun_domain.this.sending_records, count.index)}.name"
-  type    = "${element(mailgun_domain.this.sending_records, count.index)}.record_type"
+  name    = "${mailgun_domain.this.sending_records.0.name}."
   ttl     = "${var.record_ttl}"
-  records = ["${element(mailgun_domain.this.sending_records, count.index)}.value"]
+  type    = "${mailgun_domain.this.sending_records.0.record_type}"
+  records = ["${mailgun_domain.this.sending_records.0.value}."]
 }
 
-resource "aws_route53_record" "mailgun_receiving_records" {
-
-  # This is not allowed (yet), see terraform#1497, hard-coding for now.
-  #  count   = "${length(mailgun_domain.this.receiving_records)}"
-  count = 2
-
+resource "aws_route53_record" "mailgun_sending_record_1" {
   zone_id = "${aws_route53_zone.this.zone_id}"
-  name    = "${element(mailgun_domain.this.receiving_records, count.index)}.name"
-  type    = "${element(mailgun_domain.this.receiving_records, count.index)}.record_type"
+  name    = "${mailgun_domain.this.sending_records.1.name}."
   ttl     = "${var.record_ttl}"
-  records = ["${element(mailgun_domain.this.receiving_records, count.index)}.priority ${element(mailgun_domain.this.receiving_records, count.index)}.value"]
+  type    = "${mailgun_domain.this.sending_records.1.record_type}"
+  records = ["${mailgun_domain.this.sending_records.1.value}."]
 }
 
-output "receiving_records" {
-  value = ["${aws_route53_record.mailgun_receiving_records.*.fqdn}"]
+resource "aws_route53_record" "mailgun_sending_record_2" {
+  zone_id = "${aws_route53_zone.this.zone_id}"
+  name    = "${mailgun_domain.this.sending_records.2.name}."
+  ttl     = "${var.record_ttl}"
+  type    = "${mailgun_domain.this.sending_records.2.record_type}"
+  records = ["${mailgun_domain.this.sending_records.2.value}."]
 }
 
-output "sending_records" {
-  value = ["${aws_route53_record.mailgun_sending_records.*.fqdn}"]
+resource "aws_route53_record" "mailgun_receiving_record_0" {
+  zone_id = "${aws_route53_zone.this.zone_id}"
+  name = "@"
+  ttl     = "${var.record_ttl}"
+  type = "${mailgun_domain.this.receiving_records.0.record_type}"
+  records = ["${mailgun_domain.this.receiving_records.0.priority} ${mailgun_domain.this.receiving_records.0.value}."]
+
 }
+
+resource "aws_route53_record" "mailgun_receiving_record_1" {
+  zone_id = "${aws_route53_zone.this.zone_id}"
+  name = "@"
+  ttl     = "${var.record_ttl}"
+  type = "${mailgun_domain.this.receiving_records.1.record_type}"
+  records = ["${mailgun_domain.this.receiving_records.1.priority} ${mailgun_domain.this.receiving_records.1.value}."]}

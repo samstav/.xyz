@@ -3,11 +3,27 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "tf_remote_config_bucket" {
+  lifecycle {
+    prevent_destroy = true
+  }
+
   count  = "${var.tf_remote_backend}"
   bucket = "${var.tf_remote_backend_bucket_prefix}-${replace(var.domain, ".", "-dot-") }"
 
   versioning {
     enabled = true
+  }
+}
+
+# This might be useful at some point, for referencing values in the remote state.
+data "terraform_remote_state" "this" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.tf_remote_backend_bucket_prefix}-${replace(var.domain, ".", "-dot-") }"
+    key     = "${var.tf_remote_backend_key}"
+    region  = "${var.aws_region}"
+    encrypt = 1
   }
 }
 
@@ -32,6 +48,10 @@ resource "mailgun_domain" "this" {
   smtp_password = "${var.mailgun_smtp_password}"
   spam_action   = "${var.mailgun_spam_action}"
   wildcard      = "${var.mailgun_wildcard}"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_route53_zone" "this" {

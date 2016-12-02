@@ -98,6 +98,7 @@ def _tf_remote_config(args):
         ),
         '-backend-config="key={0}"'.format(TERRAFORM_REMOTE_CONFIG_KEY),
         '-backend-config="region={0}"'.format(args.aws_region),
+        '-backend-config="encrypt=1"',
     ]
     command = ' '.join(command)
     if args.dry_run:

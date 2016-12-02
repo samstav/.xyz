@@ -18,6 +18,10 @@ variable "tf_remote_backend_bucket_prefix" {
   default = "melon-terraform-state"
 }
 
+variable "tf_remote_backend_key" {
+  default = "melon-terraform.tfstate"
+}
+
 # Set this to 0 if you are using a local tfstate file.
 variable "tf_remote_backend" {
   default = 1

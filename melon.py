@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import argparse
+import collections
 import getpass
 import json
 import os
@@ -21,6 +22,7 @@ def _mailgun_session(user, key):
     mailgun = requests.session()
     mailgun.auth = requests.auth.HTTPBasicAuth(user, key)
     return mailgun
+
 
 def _show_domains(args):
     mailgun = _mailgun_session(args.mailgun_user, args.mailgun_api_key)
@@ -42,7 +44,6 @@ def _show_domain(args):
     print(json.dumps(res.json(), sort_keys=True, indent=2))
 
 
-
 def _tfvars(args):
     mailgun = _mailgun_session(args.mailgun_user, args.mailgun_api_key)
     url = '{0}/domains/{1}'.format(MAILGUN, args.domain)
@@ -50,25 +51,15 @@ def _tfvars(args):
     res.raise_for_status()
     domain = res.json()
     tfvars = {
-        'variable': {
-            'domain': {
-                'default': domain['domain']['name']
-            },
-            'mailgun_api_key': {
-                'default': args.mailgun_api_key
-            },
-            'mailgun_domain_smtp_password': {
-                'default': domain['domain']['smtp_password']
-            },
-            'mailgun_domain_spam_action': {
-                'default': domain['domain']['spam_action']
-            },
-            'mailgun_domain_wildcard': {
-                'default': domain['domain']['wildcard']
-            },
-        }
+        'variable': collections.OrderedDict(sorted([
+            ('domain', {'default': domain['domain']['name']}),
+            ('mailgun_smtp_password', {'default': domain['domain']['smtp_password']}),
+            ('mailgun_spam_action', {'default': domain['domain']['spam_action']}),
+            ('mailgun_wildcard', {'default': domain['domain']['wildcard']}),
+            ('mailgun_api_key', {'default': args.mailgun_api_key}),
+            ]))
     }
-    print(json.dumps(tfvars, sort_keys=True, indent=4))
+    print(json.dumps(tfvars, sort_keys=True, indent=2))
 
 
 
@@ -119,7 +110,7 @@ def _dispatch(parser):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description='Get variables for terraform.'
+        description='Melon CLI.'
     )
     parser.add_argument(
         '--verbose', '-v',

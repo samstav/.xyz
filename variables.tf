@@ -2,6 +2,14 @@ variable "mailgun_smtp_password" {
   type = "string"
 }
 
+variable "mailgun_api_key" {
+  type = "string"
+}
+
+variable "domain" {
+  type = "string"
+}
+
 variable "mailgun_spam_action" {
   default = "tag"
 }

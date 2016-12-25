@@ -50,15 +50,14 @@ def _tfvars(args):
     res = mailgun.get(url)
     res.raise_for_status()
     domain = res.json()
-    tfvars = {
-        'variable': collections.OrderedDict(sorted([
-            ('domain', {'default': domain['domain']['name']}),
-            ('mailgun_smtp_password', {'default': domain['domain']['smtp_password']}),
-            ('mailgun_spam_action', {'default': domain['domain']['spam_action']}),
-            ('mailgun_wildcard', {'default': domain['domain']['wildcard']}),
-            ('mailgun_api_key', {'default': args.mailgun_api_key}),
-            ]))
-    }
+    tfvars = collections.OrderedDict(sorted([
+        ('domain', domain['domain']['name']),
+        ('mailgun_smtp_password', domain['domain']['smtp_password']),
+        ('mailgun_spam_action', domain['domain']['spam_action']),
+        ('mailgun_wildcard', domain['domain']['wildcard']),
+        ('mailgun_api_key', args.mailgun_api_key),
+        ])
+    )
     print(json.dumps(tfvars, sort_keys=True, indent=2))
 
 

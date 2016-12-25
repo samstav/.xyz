@@ -93,18 +93,11 @@ resource "aws_route53_record" "mailgun_sending_record_2" {
   records = ["${mailgun_domain.this.sending_records.2.value}"]
 }
 
-resource "aws_route53_record" "mailgun_receiving_record_0" {
+resource "aws_route53_record" "mailgun_receiving_records" {
   zone_id = "${aws_route53_zone.this.zone_id}"
-  name = "@"
+  name = ""
   ttl     = "${var.record_ttl}"
-  type = "${mailgun_domain.this.receiving_records.0.record_type}"
-  records = ["${mailgun_domain.this.receiving_records.0.priority} ${mailgun_domain.this.receiving_records.0.value}"]
+  type = "MX"
+  records = ["${mailgun_domain.this.receiving_records.0.priority} ${mailgun_domain.this.receiving_records.0.value}", "${mailgun_domain.this.receiving_records.1.priority} ${mailgun_domain.this.receiving_records.1.value}"]
 
 }
-
-resource "aws_route53_record" "mailgun_receiving_record_1" {
-  zone_id = "${aws_route53_zone.this.zone_id}"
-  name = "@"
-  ttl     = "${var.record_ttl}"
-  type = "${mailgun_domain.this.receiving_records.1.record_type}"
-  records = ["${mailgun_domain.this.receiving_records.1.priority} ${mailgun_domain.this.receiving_records.1.value}"]}

@@ -1,4 +1,9 @@
 
+# Terraform
 .terraform
+*.plan
+terraform.tfvars.json
 
+
+# Python
 .pyc

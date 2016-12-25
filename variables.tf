@@ -1,7 +1,3 @@
-# variable "mailgun_api_key" {
-#   type = "string"
-# }
-
 variable "mailgun_smtp_password" {
   type = "string"
 }
@@ -30,10 +26,6 @@ variable "tf_remote_backend" {
 variable "record_ttl" {
   default = 300
 }
-
-# variable "domain" {
-#   type = "string"
-# }
 
 variable "aws_region" {
   default = "us-east-1"

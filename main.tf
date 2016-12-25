@@ -74,7 +74,7 @@ resource "aws_route53_record" "mailgun_sending_record_0" {
   name    = "${mailgun_domain.this.sending_records.0.name}."
   ttl     = "${var.record_ttl}"
   type    = "${mailgun_domain.this.sending_records.0.record_type}"
-  records = ["${mailgun_domain.this.sending_records.0.value}."]
+  records = ["${mailgun_domain.this.sending_records.0.value}"]
 }
 
 resource "aws_route53_record" "mailgun_sending_record_1" {
@@ -82,7 +82,7 @@ resource "aws_route53_record" "mailgun_sending_record_1" {
   name    = "${mailgun_domain.this.sending_records.1.name}."
   ttl     = "${var.record_ttl}"
   type    = "${mailgun_domain.this.sending_records.1.record_type}"
-  records = ["${mailgun_domain.this.sending_records.1.value}."]
+  records = ["${mailgun_domain.this.sending_records.1.value}"]
 }
 
 resource "aws_route53_record" "mailgun_sending_record_2" {
@@ -90,7 +90,7 @@ resource "aws_route53_record" "mailgun_sending_record_2" {
   name    = "${mailgun_domain.this.sending_records.2.name}."
   ttl     = "${var.record_ttl}"
   type    = "${mailgun_domain.this.sending_records.2.record_type}"
-  records = ["${mailgun_domain.this.sending_records.2.value}."]
+  records = ["${mailgun_domain.this.sending_records.2.value}"]
 }
 
 resource "aws_route53_record" "mailgun_receiving_record_0" {
@@ -98,7 +98,7 @@ resource "aws_route53_record" "mailgun_receiving_record_0" {
   name = "@"
   ttl     = "${var.record_ttl}"
   type = "${mailgun_domain.this.receiving_records.0.record_type}"
-  records = ["${mailgun_domain.this.receiving_records.0.priority} ${mailgun_domain.this.receiving_records.0.value}."]
+  records = ["${mailgun_domain.this.receiving_records.0.priority} ${mailgun_domain.this.receiving_records.0.value}"]
 
 }
 
@@ -107,4 +107,4 @@ resource "aws_route53_record" "mailgun_receiving_record_1" {
   name = "@"
   ttl     = "${var.record_ttl}"
   type = "${mailgun_domain.this.receiving_records.1.record_type}"
-  records = ["${mailgun_domain.this.receiving_records.1.priority} ${mailgun_domain.this.receiving_records.1.value}."]}
+  records = ["${mailgun_domain.this.receiving_records.1.priority} ${mailgun_domain.this.receiving_records.1.value}"]}

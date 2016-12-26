@@ -33,3 +33,7 @@ Then
 terraform plan -out=melon.plan
 terraform apply melon.plan
 ```
+
+# Nameservers
+
+Make sure the nameservers (the values on your NS record in your zone) match the nameservers configured at your registrar.

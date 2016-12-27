@@ -4,10 +4,12 @@ from __future__ import print_function
 import argparse
 import collections
 import getpass
+import itertools
 import json
 import os
 import shlex
 import subprocess
+import sys
 
 import boto3
 import requests
@@ -23,13 +25,15 @@ def _mailgun_session(user, key):
     mailgun.auth = requests.auth.HTTPBasicAuth(user, key)
     return mailgun
 
+def _get_routes(session):
+    url = '{0}/routes'.format(MAILGUN)
+    res = session.get(url)
+    res.raise_for_status()
+    return res.json()['items']
 
 def _show_routes(args):
     mailgun = _mailgun_session(args.mailgun_user, args.mailgun_api_key)
-    url = '{0}/routes'.format(MAILGUN)
-    res = mailgun.get(url)
-    res.raise_for_status()
-    routes = res.json()['items']
+    routes = _get_routes(mailgun)
     print(json.dumps(routes, sort_keys=True, indent=2))
 
 def _create_route(args):
@@ -52,9 +56,44 @@ def _create_route(args):
         # executed, all lower priority Routes will also be evaluated.
         data.append(('action', 'stop()'))
 
-    res = mailgun.post(url, data=data)
-    res.raise_for_status()
-    print(json.dumps(res.json(), sort_keys=True, indent=2))
+    _data = {k: v for k, v in data if k != 'action'}
+    _data['actions'] = [v for k, v in data if k == 'action']
+
+    match_for_update = ('actions', 'expression')
+    match_for_pass = match_for_update + ('priority', 'description')
+
+    existing = _get_routes(mailgun)
+    all_matched = next(
+        (_route for _route in existing
+         if all(_data[k] == _route[k] for k in match_for_pass)),
+        None
+    )
+    if all_matched:
+        print("Found existing matching route!", file=sys.stderr)
+        print(json.dumps(all_matched, sort_keys=True, indent=2))
+        return
+
+    # if k2 set matches, just update (PUT) it
+    updatable = next(
+        (_route for _route in existing
+         if all(_data[k] == _route[k] for k in match_for_update)),
+        None
+    )
+    if updatable:
+        url = '{0}/{id}'.format(url, id=updatable['id'])
+        updated = mailgun.put(
+            url,
+            data=[item for item in data
+                  if item[0] in ('description', 'priority')]
+        )
+        updated.raise_for_status()
+        print(json.dumps(updated.json(), sort_keys=True, indent=2))
+        return
+
+    # Otherwise, create a brand new route!
+    created = mailgun.post(url, data=data)
+    created.raise_for_status()
+    print(json.dumps(created.json(), sort_keys=True, indent=2))
 
 
 def _show_domains(args):
@@ -184,7 +223,12 @@ if __name__ == '__main__':
     # `melon create-route`
     create_route = subparsers.add_parser(
         'create-route',
-        help='Create a mailgun route.'
+        help=('Create a mailgun route. Checks for existing '
+              'routes to prevent dupes. If a matching route exists, '
+              'this command does nothing. If only "priority" or '
+              '"description" changes, this will update the route '
+              'attributes using the mailgun api (PUT), otherwise, '
+              'a brand new route is created.')
     )
     _mailgun_args(create_route)
     create_route.add_argument(
@@ -198,8 +242,12 @@ if __name__ == '__main__':
               'Defaults to ".*" which matches ANY recipients on the '
               'domain.'),
     )
+    # This is a nice combo: nargs=+, required, append.
     create_route.add_argument(
-        '--forward', '-f', nargs='+',
+        '--forward', '-f',
+        nargs='?',
+        required=True,
+        action='append',
         help=('Email address or location to forward email to. '
               'This argument may be specified multiple times to '
               'forward to multiple locations.')

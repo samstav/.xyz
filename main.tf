@@ -99,5 +99,4 @@ resource "aws_route53_record" "mailgun_receiving_records" {
   ttl     = "${var.record_ttl}"
   type = "MX"
   records = ["${mailgun_domain.this.receiving_records.0.priority} ${mailgun_domain.this.receiving_records.0.value}", "${mailgun_domain.this.receiving_records.1.priority} ${mailgun_domain.this.receiving_records.1.value}"]
-
 }

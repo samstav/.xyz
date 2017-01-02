@@ -19,12 +19,21 @@ for terraform, you can instead import an _existing_ bucket:
 $ terraform import aws_s3_bucket.bucket melon-terraform-state-foo-dot-com
 ```
 
-Terraform autloads `terraform.tfvars.json` variable files as well,
+Terraform autoloads `terraform.tfvars.json` variable files as well,
 as of https://github.com/hashicorp/terraform/pull/1093
 so run the tfvars command like so:
 
 ```
 ./melon.py tfvars foo.com > terraform.tfvars.json
+```
+
+### Using an existing route53 zone for your domain
+
+To use an existing zone, instead of letting melon create the zone,
+you need to import your zone (by id) *into the mailgun-aws tf module*:
+
+```
+$ terraform import module.melon.aws_route53_zone.this <your_route53_zone_id>
 ```
 
 Then

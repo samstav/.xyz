@@ -127,11 +127,15 @@ def _tfvars(args):
         ('mailgun_smtp_password', domain['domain']['smtp_password']),
         ('mailgun_spam_action', domain['domain']['spam_action']),
         ('mailgun_wildcard', domain['domain']['wildcard']),
-        ('mailgun_api_key', args.mailgun_api_key),
         ])
     )
-    print(json.dumps(tfvars, sort_keys=True, indent=2))
-
+    if args.with_api_key:
+        tfvars['mailgun_api_key'] = args.mailgun_api_key
+    if args.print:
+        print(json.dumps(tfvars, sort_keys=True, indent=2))
+    else:
+        with open('terraform.tfvars.json', 'w') as tfvars_file:
+            json.dump(tfvars, tfvars_file, sort_keys=True, indent=2)
 
 
 def _check_tf_config_bucket(domain):
@@ -284,13 +288,27 @@ if __name__ == '__main__':
     # `melon tfvars`
     tfvars = subparsers.add_parser(
         'tfvars',
-        help='Produce tfvars for Route 53 setup.',
+        help=('Produce tfvars for infra setup and write them '
+              'to terraform.tfvars.json (unless --print is used) '
+              'which is picked up by terraform automatically.')
     )
     _mailgun_args(tfvars)
     tfvars.set_defaults(_func=_tfvars)
     tfvars.add_argument(
         'domain',
         help='Domain to get tfvars for.'
+    )
+    tfvars.add_argument(
+        '--with-api-key',
+        help='Add api key to tfvars output',
+        action='store_true',
+        default=False,
+    )
+    tfvars.add_argument(
+        '--print',
+        help='Just print the variables json; dont write to tfvars.json file',
+        action='store_true',
+        default=False,
     )
 
     # `melon tf-remote-config`

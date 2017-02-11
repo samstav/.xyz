@@ -1,12 +1,12 @@
-variable "mailgun_api_key" {
-  type = "string"
-}
-
 variable "aws_region" {
   default = "us-east-1"
 }
 
 variable "domain" {
+  type = "string"
+}
+
+variable "mailgun_api_key" {
   type = "string"
 }
 

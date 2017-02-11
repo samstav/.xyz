@@ -1,4 +1,4 @@
-# melon
+# .xyz
 samstav.xyz stuff (dns, email/mailgun + aws route 53)
 
 

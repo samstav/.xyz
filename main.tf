@@ -7,12 +7,16 @@ terraform {
 }
 
 provider "aws" {
-  region = "${var.aws_region}"
+  region = "us-east-1"
+}
+
+variable "mailgun_smtp_password" {
+  type = "string"
 }
 
 module "mailer" {
   source                = "github.com/samstav/tf_mailgun_aws"
-  domain                = "${var.domain}"
+  domain                = "samstav.xyz"
   mailgun_smtp_password = "${var.mailgun_smtp_password}"
 }
 

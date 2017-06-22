@@ -3,7 +3,11 @@
 .terraform
 *.plan
 terraform.tfvars.json
+terraform.tfstate.backup
 
 
-# Python
-.pyc
+# ignore hidden files
+.*
+
+# no secrets
+secrets.tfvars

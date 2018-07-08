@@ -10,4 +10,4 @@ terraform.tfstate.backup
 .*
 
 # no secrets
-secrets.tfvars
+*secrets*

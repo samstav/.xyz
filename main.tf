@@ -52,7 +52,7 @@ module "mailer" {
 
 resource "aws_route53_record" "keybase_proof" {
   zone_id = "${module.mailer.zone_id}"
-  name = "@"
+  name = "_keybase.samstav.xyz"
   type = "TXT"
   ttl = 300
   records = ["keybase-site-verification=EKOkYRTN-0RW6PKIqAgJ2HzE7GF0r1CDZiVXcKf2azY"]

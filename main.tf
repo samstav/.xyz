@@ -45,7 +45,7 @@ provider "mailgun" {
 }
 
 module "mailer" {
-  source                = "github.com/samstav/tf_mailgun_aws"
+  source                = "github.com/samstav/terraform-mailgun-aws?ref=v2.0.1a"
   domain                = "samstav.xyz"
   mailgun_smtp_password = "${var.mailgun_smtp_password}"
 }

@@ -52,10 +52,16 @@ resource "aws_route53_zone" "stav-dot-xyz" {
   name          = "stav.xyz."
 }
 
+resource "aws_route53_zone" "samstav-dot-xyz" {
+  name          = "samstav.xyz."
+}
+
 module "mailer" {
   source                = "github.com/samstav/terraform-mailgun-aws?ref=v2.0.1a"
   domain                = "samstav.xyz"
   mailgun_smtp_password = "${var.mailgun_smtp_password}"
+  zone_id               = "${aws_route53_zone.samstav-dot-xyz.zone_id}"
+}
 
 module "stav-dot-xyz-mailer" {
   source                = "github.com/samstav/terraform-mailgun-aws?ref=v2.0.1a"

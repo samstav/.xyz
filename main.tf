@@ -19,8 +19,29 @@ module "backend" {
   dynamodb_lock_table_enabled = 0
 }
 
+
+#
+# Variables
+#
+
 variable "mailgun_smtp_password" {
   type = "string"
+}
+
+variable "mailgun_api_key" {
+  type = "string"
+}
+
+#
+# Providers
+#
+
+provider "aws" {
+  region = "us-west-2"
+}
+
+provider "mailgun" {
+  api_key = "${var.mailgun_api_key}"
 }
 
 module "mailer" {

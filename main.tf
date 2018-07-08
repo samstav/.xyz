@@ -44,10 +44,24 @@ provider "mailgun" {
   api_key = "${var.mailgun_api_key}"
 }
 
+#
+# Resources
+#
+
+resource "aws_route53_zone" "stav-dot-xyz" {
+  name          = "stav.xyz."
+}
+
 module "mailer" {
   source                = "github.com/samstav/terraform-mailgun-aws?ref=v2.0.1a"
   domain                = "samstav.xyz"
   mailgun_smtp_password = "${var.mailgun_smtp_password}"
+
+module "stav-dot-xyz-mailer" {
+  source                = "github.com/samstav/terraform-mailgun-aws?ref=v2.0.1a"
+  domain                = "stav.xyz"
+  mailgun_smtp_password = "${var.mailgun_smtp_password}"
+  zone_id               = "${aws_route53_zone.stav-dot-xyz.zone_id}"
 }
 
 resource "aws_route53_record" "keybase_proof" {

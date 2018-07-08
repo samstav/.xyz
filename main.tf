@@ -1,13 +1,22 @@
+#
+# Backend Configuration
+#
+
 terraform {
   backend "s3" {
-    bucket = "terraform-state-samstav-dot-xyz"
+    bucket = "terraform-state-stav-dot-xyz"
+    # consider moving this into a states/
     key    = "terraform.tfstate"
-    region = "us-east-1"
+    region = "us-west-2"
+    encrypt = true
   }
 }
 
-provider "aws" {
-  region = "us-east-1"
+# This is the infra code for terraform itself (state bucket, lock table, etc.)
+module "backend" {
+  source = "github.com/samstav/terraform-aws-backend"
+  backend_bucket = "terraform-state-stav-dot-xyz"
+  dynamodb_lock_table_enabled = 0
 }
 
 variable "mailgun_smtp_password" {

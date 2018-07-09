@@ -82,3 +82,13 @@ resource "aws_route53_record" "keybase_proof" {
   ttl = 300
   records = ["keybase-site-verification=EKOkYRTN-0RW6PKIqAgJ2HzE7GF0r1CDZiVXcKf2azY"]
 }
+
+resource "aws_acm_certificate" "stav-dot-xyz-wildcard" {
+  provider = "aws.virginia"
+  domain_name       = "*.stav.xyz"
+  validation_method = "DNS"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+

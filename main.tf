@@ -100,3 +100,8 @@ resource "aws_route53_record" "stav-dot-xyz-acm_validation" {
   ttl = 60
 }
 
+resource "aws_acm_certificate_validation" "stav-dot-xyz" {
+  provider = "aws.virginia"
+  certificate_arn = "${aws_acm_certificate.stav-dot-xyz-wildcard.arn}"
+  validation_record_fqdns = ["${aws_route53_record.stav-dot-xyz-acm_validation.fqdn}"]
+}

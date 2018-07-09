@@ -40,6 +40,11 @@ provider "aws" {
   region = "us-west-2"
 }
 
+provider "aws" {
+  alias = "virginia"
+  region = "us-east-1"
+}
+
 provider "mailgun" {
   api_key = "${var.mailgun_api_key}"
 }
